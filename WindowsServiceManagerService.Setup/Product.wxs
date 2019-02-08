@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<?define Name = "WindowsServiceManagerService" ?>
+<?define Manufacturer = "TM_Dev" ?>
+<?define UpgradeCode = "{07E6A667-9420-43F7-AEF4-EE57DE3403A1}" ?>
+<?define Newtonsoft = "Newtonsoft.Json.dll" ?>
+<?define System.ValueTuple = "System.ValueTuple.dll" ?>
+<?define Telegram.Bot = "Telegram.Bot.dll" ?>
+<?define WindowsServiceManagerServiceConfig = "WindowsServiceManagerService.exe.config" ?>
+<?define WindowsServiceManagerServiceIcon = "..\WindowsServiceManagerService\WindowsServiceManagerService.ico" ?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" UpgradeCode="$(var.UpgradeCode)" Version="$(var.VersionNumber)" Language="1033"
+           Name="$(var.Name)" Manufacturer="$(var.Manufacturer)">
+    <Package InstallerVersion="300" Compressed="yes" />
+    <Media Id="1" Cabinet="WindowsServiceManagerService.cab" EmbedCab="yes" />
+
+    <!-- Allow upgrades and prevent downgrades -->
+    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
+
+    <!-- Define the directory structure -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="ROOTDIRECTORY" Name="$(var.Manufacturer)">
+          <Directory Id="APPLICATIONROOTDIRECTORY" Name="$(var.Name)" />
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <!-- Add files to your installer package -->
+    <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
+      <Component Id="$(var.WindowsServiceManagerService.TargetFileName)" Guid="{5F5455BC-4607-49FE-BFF2-33B84754BF62}">
+        <File Id="$(var.WindowsServiceManagerService.TargetFileName)"
+              Source="$(var.WindowsServiceManagerService.TargetPath)" KeyPath="yes" />
+
+        <!-- Remove the all files on uninstall -->
+        <RemoveFile Id="ROOTDIRECTORY" Name="*.*" On="both" />
+
+        <!-- Tell WiX to install the Service -->
+        <ServiceInstall Id="ServiceInstaller"
+                        Type="ownProcess"
+                        Name="WindowsServiceManagerService"
+                        DisplayName="Windows Service Manager Service"
+                        Description="A Windows service to manage Windows Services via Telegram."
+                        Start="auto"
+                        ErrorControl="normal" />
+
+        <!-- Tell WiX to start the Service -->
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall"
+                        Name="WindowsServiceManagerService" Wait="yes" />
+      </Component>
+      <Component Id="$(var.WindowsServiceManagerServiceConfig)" Guid="{38803BE5-21AE-49A0-B747-F98F322D4084}">
+        <File Id="$(var.WindowsServiceManagerServiceConfig)"
+              Source="$(var.WindowsServiceManagerService.TargetDir)$(var.WindowsServiceManagerServiceConfig)"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="$(var.Newtonsoft)" Guid="{63760FC8-A03B-4046-9EC7-5822025A41E3}">
+        <File Id="$(var.Newtonsoft)" Source="$(var.WindowsServiceManagerService.TargetDir)$(var.Newtonsoft)"
+              KeyPath="yes" />
+      </Component>
+      <Component Id="$(var.System.ValueTuple)" Guid="{3026AEA1-8A6F-421C-9592-B2EE0D633499}">
+        <File Id="$(var.System.ValueTuple)"
+              Source="$(var.WindowsServiceManagerService.TargetDir)$(var.System.ValueTuple)" KeyPath="yes" />
+      </Component>
+      <Component Id="$(var.Telegram.Bot)" Guid="{12F89544-0B5E-47BA-B9BC-73C63C118C11}">
+        <File Id="$(var.Telegram.Bot)" Source="$(var.WindowsServiceManagerService.TargetDir)$(var.Telegram.Bot)"
+              KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <!-- Tell WiX to install the files -->
+    <Feature Id="MainApplication" Title="Main Application" Level="1">
+      <ComponentRef Id="$(var.WindowsServiceManagerService.TargetFileName)" />
+      <ComponentRef Id="$(var.WindowsServiceManagerServiceConfig)" />
+      <ComponentRef Id="$(var.Newtonsoft)" />
+      <ComponentRef Id="$(var.System.ValueTuple)" />
+      <ComponentRef Id="$(var.Telegram.Bot)" />
+    </Feature>
+    <Icon Id="icon.ico" SourceFile="$(var.WindowsServiceManagerServiceIcon)" />
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+  </Product>
+</Wix>

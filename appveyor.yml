@@ -1,0 +1,15 @@
+version: 1.0.0.{build}
+skip_tags: true
+image: Visual Studio 2017
+before_build:
+- cmd: nuget restore WindowsServiceManagerService.sln
+build:
+  project: WindowsServiceManagerService.sln
+  verbosity: minimal
+artifacts:
+- path: WindowsServiceManagerService.Setup\bin\Debug\
+  name: WindowsServiceManagerService v$(appveyor_build_version)
+deploy:
+- provider: GitHub
+  auth_token:
+    secure: U64+rJn7WkpD8O1/E9MEnh7wpkjvPAl10AZ+hsYNOWxXUQoBgzho9jib9R+w9WW9
