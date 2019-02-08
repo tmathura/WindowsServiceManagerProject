@@ -89,22 +89,6 @@ namespace WindowsServiceManagerService
         {
             try
             {
-                var assem = Assembly.GetExecutingAssembly();
-                var fileInfo = new FileInfo(assem.Location);
-
-                if (DateTime.Now > fileInfo.LastWriteTime.AddMonths(1))
-                {
-                    using (var eventLog = new EventLog("Application"))
-                    {
-                        eventLog.Source = "WindowsServiceManagerService";
-                        eventLog.WriteEntry(
-                            "Error: This software build is 1 month old, please contact the developer to get a new build.",
-                            EventLogEntryType.Error);
-                    }
-
-                    Environment.Exit(0);
-                }
-
                 var callbackQuery = callbackQueryEventArgs.CallbackQuery;
                 try
                 {
