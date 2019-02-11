@@ -1,6 +1,6 @@
-| Build |
-|-------|
-| [![Build status](https://ci.appveyor.com/api/projects/status/sm88j31teh8q74gh?svg=true)](https://ci.appveyor.com/project/tmathura/windowsservicemanagerproject) |
+| Master | Dev |
+|-------|-------|
+| [![Build status](https://ci.appveyor.com/api/projects/status/wnwdk00harmugerj/branch/master?svg=true)](https://ci.appveyor.com/project/tmathura/torrentcreatoruploaderproject/branch/master) | [![Build status](https://ci.appveyor.com/api/projects/status/wnwdk00harmugerj?svg=true)](https://ci.appveyor.com/project/tmathura/torrentcreatoruploaderproject) |
 
 # Windows Service Manager Project
 This application allows you to manage your windows service.
