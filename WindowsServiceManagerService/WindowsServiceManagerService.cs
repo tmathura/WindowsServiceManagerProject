@@ -355,7 +355,7 @@ namespace WindowsServiceManagerService
 
                 if (text.Contains("/get_status_of_below_services"))
                 {
-                    var serviceName = ConfigurationManager.AppSettings["PreLoadedServices"].Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToList(); ;
+                    var serviceName = ConfigurationManager.AppSettings["PreLoadedServices"].Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToList();
                     
                     await _telegramBot.SendChatActionAsync(chatId, ChatAction.Typing);
 
@@ -458,43 +458,32 @@ namespace WindowsServiceManagerService
 
         public static ReplyKeyboardMarkup CustomerKeyBoard()
         {
+            var serviceNames = ConfigurationManager.AppSettings["PreLoadedServices"].Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var buttonList = new List<string>
+            {
+                "/get_status_of_below_services",
+                "/get_service [Insert Service Name Here]"
+            };
+            for (var i = 0; i < buttonList.Count; i++)
+                buttonList.AddRange(serviceNames
+                    .Skip(i * 1)
+                    .Take(1)
+                    .Select(serviceName =>($"/get_service [{serviceName}]"))
+                    .ToList());
+            buttonList.Add("/help");
+
+            var buttons = new KeyboardButton[buttonList.Count][];
+
+            for (var i = 0; i < buttons.Length; i++)
+                buttons[i] = buttonList
+                    .Skip(i * 1)
+                    .Take(1)
+                    .Select(btnText => new KeyboardButton(btnText))
+                    .ToArray();
+
             var keyb = new ReplyKeyboardMarkup
             {
-                Keyboard = new[]
-                {
-                    new[]
-                    {
-                        new KeyboardButton("/get_status_of_below_services")
-                    },
-                    new[]
-                    {
-                        new KeyboardButton("/get_service [Insert Service Name Here]")
-                    },
-                    new[]
-                    {
-                        new KeyboardButton("/get_service [deluged]")
-                    },
-                    new[]
-                    {
-                        new KeyboardButton("/get_service [delugeweb]")
-                    },
-                    new[]
-                    {
-                        new KeyboardButton("/get_service [NzbDrone]")
-                    },
-                    new[]
-                    {
-                        new KeyboardButton("/get_service [Radarr]")
-                    },
-                    new[]
-                    {
-                        new KeyboardButton("/get_service [TorrentCreatorUploaderService]")
-                    },
-                    new[]
-                    {
-                        new KeyboardButton("/help")
-                    }
-                }
+                Keyboard = buttons
             };
             return keyb;
         }
