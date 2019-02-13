@@ -311,14 +311,7 @@ namespace WindowsServiceManagerService
 
                 if (text.Contains("/get_status_of_below_services"))
                 {
-                    var serviceName = new List<string>
-                    {
-                        "deluged",
-                        "delugeweb",
-                        "NzbDrone",
-                        "Radarr",
-                        "TorrentCreatorUploaderService"
-                    };
+                    var serviceName = ConfigurationManager.AppSettings["PreLoadedServices"].Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToList(); ;
 
                     await _telegramBot.SendChatActionAsync(chatId, ChatAction.Typing);
 
