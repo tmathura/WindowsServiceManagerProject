@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.ServiceProcess;
 using System.Threading.Tasks;
 using System.Xml;
 using Telegram.Bot;
 using Telegram.Bot.Args;
-using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.InlineKeyboardButtons;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace WindowsServiceManagerService
@@ -242,7 +238,7 @@ namespace WindowsServiceManagerService
                 var text = message.Text;
                 var chatId = messageEventArgs.Message.Chat.Id;
 
-                if (message == null || message.Type != MessageType.TextMessage) return;
+                if (message == null || message.Type != MessageType.Text) return;
 
                 if (text == "/start")
                 {
@@ -380,9 +376,7 @@ namespace WindowsServiceManagerService
                 buttons[i] = buttonList
                     .Skip(i * columns)
                     .Take(columns)
-                    .Select(direction => new InlineKeyboardCallbackButton(
-                        direction.Value, direction.Key
-                    ))
+                    .Select(direction => new InlineKeyboardButton { Text = direction.Value, CallbackData = direction.Key })
                     .ToArray();
             return new InlineKeyboardMarkup(buttons);
         }
@@ -418,8 +412,8 @@ namespace WindowsServiceManagerService
                         $"Already stopped: {service.DisplayName}");
                 else
                     buttonsList.Add(
-                        $"Start#{service.Service}",
-                        $"Start: {service.DisplayName}");
+                        $"Stop#{service.Service}",
+                        $"Stop: {service.DisplayName}");
             }
 
             return CreateInlineKeyboardButton(buttonsList, 1);
