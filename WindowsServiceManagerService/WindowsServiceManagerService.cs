@@ -10,12 +10,14 @@ using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using System.Timers;
 
 namespace WindowsServiceManagerService
 {
     public partial class WindowsServiceManagerService : ServiceBase
     {
         private TelegramBotClient _telegramBot;
+        private Timer _timer;
 
         public WindowsServiceManagerService()
         {
@@ -43,6 +45,19 @@ namespace WindowsServiceManagerService
                 _telegramBot.OnMessage += BotOnMessageReceived;
                 _telegramBot.OnMessageEdited += BotOnMessageReceived;
                 _telegramBot.StartReceiving();
+
+                var autoStartServicesTimer = Convert.ToInt32(ConfigurationManager.AppSettings["AutoStartServicesTimer"]);
+                if (autoStartServicesTimer > 0)
+                {
+                    _timer = new Timer
+                    {
+                        Interval = autoStartServicesTimer,
+                        AutoReset = true
+                    };
+                    _timer.Elapsed += timer_Elapsed;
+                    _timer.Start();
+                }
+
                 SendTelegramMsg(accessToken, "Windows Service Manager Service started.");
             }
         }
@@ -50,6 +65,35 @@ namespace WindowsServiceManagerService
         protected override void OnStop()
         {
             _telegramBot?.StopReceiving();
+        }
+
+        private void timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            var accessToken = ConfigurationManager.AppSettings["TelegramAccessToken"];
+            var serviceNames = ConfigurationManager.AppSettings["PreLoadedServices"].Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            foreach (var serviceName in serviceNames)
+            {
+                try
+                {
+                    var service = new ServiceController(serviceName);
+                    if (service.Status != ServiceControllerStatus.Running && service.Status != ServiceControllerStatus.StartPending)
+                    {
+                        service.Start();
+                        SendTelegramMsg(accessToken, $"Auto Start Services Process: {serviceName} started.");
+                    }
+                }
+                catch (Exception exception)
+                {
+                    using (var eventLog = new EventLog("Application"))
+                    {
+                        eventLog.Source = "WindowsServiceManagerService";
+                        eventLog.WriteEntry($"Auto Start Services Process: Error starting service {serviceName}, error '{exception.Message}' .",
+                            EventLogEntryType.Error);
+                    }
+                    SendTelegramMsg(accessToken, $"Auto Start Services Process: Error starting service {serviceName}.");
+                }
+            }
         }
 
         public async Task SendTelegramMsg(string accessToken, string msg)
@@ -312,7 +356,7 @@ namespace WindowsServiceManagerService
                 if (text.Contains("/get_status_of_below_services"))
                 {
                     var serviceName = ConfigurationManager.AppSettings["PreLoadedServices"].Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToList(); ;
-
+                    
                     await _telegramBot.SendChatActionAsync(chatId, ChatAction.Typing);
 
                     var servicesArray = ServiceController.GetServices();
