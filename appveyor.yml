@@ -16,9 +16,3 @@ build:
 artifacts:
 - path: WindowsServiceManagerService.Setup\bin\Debug\
   name: WindowsServiceManagerService v$(appveyor_build_version)
-deploy:
-- provider: GitHub
-  auth_token:
-    secure: ugVfDOM0wabDVj0IOUu29PgJPcRrJvjzzrD4PxbhMtAA39V80ev7JXw1g/dv6fHY
-  on:
-    branch: master
