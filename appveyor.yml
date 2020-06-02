@@ -19,6 +19,6 @@ artifacts:
 deploy:
 - provider: GitHub
   auth_token:
-    secure: {GitHubAuthToken}
+    secure: $GitHubAuthToken
   on:
     branch: master
