@@ -2,6 +2,11 @@ version: 1.0.0.{build}
 skip_tags: true
 pull_requests:
   do_not_increment_build_number: true
+assembly_info:
+  patch: true
+  file: AssemblyInfo.*
+  assembly_version: "1.0.0.{build}"
+  assembly_file_version: "{version}"
 image: Visual Studio 2017
 before_build:
 - cmd: nuget restore WindowsServiceManagerService.sln
@@ -11,17 +16,3 @@ build:
 artifacts:
 - path: WindowsServiceManagerService.Setup\bin\Debug\
   name: WindowsServiceManagerService v$(appveyor_build_version)
-deploy:
-- provider: GitHub
-  auth_token:
-    secure: U64+rJn7WkpD8O1/E9MEnh7wpkjvPAl10AZ+hsYNOWxXUQoBgzho9jib9R+w9WW9
-  on:
-    branch: master
-notifications:
-- provider: Email
-  to:
-  - tmathura@gmail.com
-  on_build_success: true
-  on_build_failure: true
-  on_build_status_changed: false
-  
