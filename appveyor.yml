@@ -10,6 +10,7 @@ assembly_info:
 image: Visual Studio 2017
 before_build:
 - cmd: nuget restore WindowsServiceManagerService.sln
+- cmd: echo %APPVEYOR_BUILD_VERSION%
 build:
   project: WindowsServiceManagerService.sln
   verbosity: minimal
