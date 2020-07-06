@@ -3,6 +3,8 @@ environment:
   my_secret:
     secure: cCzcfyH7ESZziA53h23oUw==
   dumm_var: hello
+  my_variable:
+    secure: CFd/VDowa1MGrau5WgOaxtqhJ5XmutVJNno4naZSiUg=
 skip_tags: true
 pull_requests:
   do_not_increment_build_number: true
@@ -17,6 +19,7 @@ before_build:
 - cmd: echo %APPVEYOR_BUILD_VERSION%
 - cmd: echo %my_secret%
 - cmd: echo %dumm_var%
+- cmd: echo %my_variable%
 build:
   project: WindowsServiceManagerService.sln
   verbosity: minimal
