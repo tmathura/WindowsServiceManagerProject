@@ -19,10 +19,10 @@ image: Visual Studio 2017
 before_build:
 - cmd: nuget restore WindowsServiceManagerService.sln
 - cmd: echo %APPVEYOR_BUILD_VERSION%
-- cmd: echo %my_secret%
-- cmd: echo %dumm_var%
-- cmd: echo %my_variable%
-- cmd: echo %my_variable_two%
+- cmd: echo my_secret is %my_secret%
+- cmd: echo dumm_var is %dumm_var%
+- cmd: echo my_variable is %my_variable%
+- cmd: echo my_variable_two is %my_variable_two%
 build:
   project: WindowsServiceManagerService.sln
   verbosity: minimal
